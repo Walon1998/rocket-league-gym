@@ -13,7 +13,7 @@ spec_LiuDistanceBallToGoalReward = [
 ]
 
 
-# @jitclass(spec_LiuDistanceBallToGoalReward)
+@jitclass(spec_LiuDistanceBallToGoalReward)
 class LiuDistanceBallToGoalReward:
     def __init__(self, own_goal=False):
         self.own_goal = own_goal
@@ -43,7 +43,7 @@ spec_VelocityBallToGoalReward = [
 ]
 
 
-# @jitclass(spec_LiuDistanceBallToGoalReward)
+@jitclass(spec_LiuDistanceBallToGoalReward)
 class VelocityBallToGoalReward(object):
     def __init__(self, own_goal=False, use_scalar_projection=False):
         self.own_goal = own_goal

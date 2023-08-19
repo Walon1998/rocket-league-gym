@@ -12,6 +12,12 @@ from numba.experimental import jitclass
 from numba.typed import List as NumbaList
 from numba import typeof, typed, njit
 from numba.types import int32, float32, ListType
+@njit
+def empty_bag_list():
+    l = typed.List()
+    l.append(PlayerData())
+    l.clear()
+    return l
 
 spec_GameState = [
     ('BOOST_PADS_LENGTH', int32),
@@ -23,7 +29,7 @@ spec_GameState = [
     ('blue_score', int32),
     ('orange_score', int32),
     ('last_touch', int32),
-    ('players', types.List(PlayerData.class_type.instance_type)),
+    ('players', ListType(PlayerData.class_type.instance_type)),
     ('ball', PhysicsObject.class_type.instance_type),
     ('inverted_ball', PhysicsObject.class_type.instance_type),
     ('boost_pads', float32[:]),
@@ -44,8 +50,7 @@ class GameState(object):
         self.orange_score: int = -1
         self.last_touch: Optional[int] = -1
 
-        self.players = [PlayerData()]
-        self.players.clear()
+        self.players = empty_bag_list()
 
         self.ball: PhysicsObject = PhysicsObject(None, None, None, None)
         self.inverted_ball: PhysicsObject = PhysicsObject(None, None, None, None)
@@ -100,7 +105,8 @@ class GameState(object):
             if player.ball_touched:
                 self.last_touch = player.car_id
 
-        self.players = sorted(self.players, key=lambda p: p.car_id)  # YOU'RE WELCOME RANGLER, THIS WAS MY INNOVATION.
+        self.players.sort(key=lambda p: p.car_id)
+        # self.players = sorted(self.players, )  # YOU'RE WELCOME RANGLER, THIS WAS MY INNOVATION.
 
     def _decode_player(self, full_player_data):
         player_data = PlayerData()

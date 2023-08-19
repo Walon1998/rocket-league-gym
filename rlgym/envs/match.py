@@ -9,6 +9,7 @@ from rlgym.utils import common_values
 import gym.spaces
 import numpy as np
 from typing import List, Union, Any
+from numba import typed
 
 
 class Match(Environment):
@@ -159,7 +160,7 @@ class Match(Environment):
         from rlgym.utils.gamestates.player_data import PlayerData
 
         num_cars = self._team_size*2 if self._spawn_opponents else self._team_size
-        empty_player_packets = []
+        empty_player_packets = typed.List()
         for i in range(num_cars):
             player_packet = PlayerData()
             player_packet.car_id = i
