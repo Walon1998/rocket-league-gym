@@ -109,8 +109,8 @@ class Gym(Env):
         obs = self._match.build_observations(state)
         if return_info:
             info = {
-                'state': state,
-                'result': self._match.get_result(state)
+                # 'state': state,
+                # 'result': self._match.get_result(state)
             }
             return obs, info
         return obs
@@ -145,8 +145,8 @@ class Gym(Env):
         self._prev_state = state
 
         info = {
-            'state': state,
-            'result': self._match.get_result(state)
+            # 'state': state,
+            # 'result': self._match.get_result(state)
         }
 
         return obs, reward, done, info

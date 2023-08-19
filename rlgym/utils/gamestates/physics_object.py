@@ -5,16 +5,29 @@ A class to represent the state of a physics object from the game.
 from rlgym.utils import math
 import numpy as np
 from typing import Optional
+from numba import int32, float32, boolean, float64  # import the types
+from numba.experimental import jitclass
 
+spec_PhysicsObject = [
+    ('position', float64[:]),
+    ('quaternion', float64[:]),
+    ('linear_velocity', float64[:]),
+    ('angular_velocity', float64[:]),
+    ('_euler_angles', float64[:]),
+    ('_rotation_mtx', float64[:, :]),
+    ('_has_computed_rot_mtx', boolean),
+    ('_has_computed_euler_angles', boolean),
+]
 
+@jitclass(spec_PhysicsObject)
 class PhysicsObject(object):
     def __init__(self, position=None, quaternion=None, linear_velocity=None, angular_velocity=None):
         self.position: np.ndarray = position if position is not None else np.zeros(3)
-        self.quaternion: np.ndarray = quaternion if quaternion is not None else np.array([1, 0, 0, 0], dtype=np.float32)
+        self.quaternion: np.ndarray = quaternion if quaternion is not None else np.array([1, 0, 0, 0], dtype=np.float64)
         self.linear_velocity: np.ndarray = linear_velocity if linear_velocity is not None else np.zeros(3)
         self.angular_velocity: np.ndarray = angular_velocity if angular_velocity is not None else np.zeros(3)
-        self._euler_angles: Optional[np.ndarray] = None
-        self._rotation_mtx: Optional[np.ndarray] = None
+        self._euler_angles: Optional[np.ndarray] = np.zeros(3)
+        self._rotation_mtx: Optional[np.ndarray] = np.zeros((3, 3))
         self._has_computed_rot_mtx = False
         self._has_computed_euler_angles = False
 
