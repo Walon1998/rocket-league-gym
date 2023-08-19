@@ -8,7 +8,7 @@ from numba import int32, float32, boolean, float64, types, typed, typeof  # impo
 from numba.experimental import jitclass
 
 
-# @jitclass
+@jitclass
 class LiuDistancePlayerToBallReward:
     def __init__(self):
         pass
@@ -31,7 +31,7 @@ spec_VelocityPlayerToBallReward = [
 ]
 
 
-# @jitclass(spec_VelocityPlayerToBallReward)
+@jitclass(spec_VelocityPlayerToBallReward)
 class VelocityPlayerToBallReward(object):
     def __init__(self, use_scalar_projection=False):
         self.use_scalar_projection = use_scalar_projection
@@ -57,7 +57,7 @@ class VelocityPlayerToBallReward(object):
             return float(np.dot(norm_pos_diff, norm_vel))
 
 
-# @jitclass
+@jitclass
 class FaceBallReward(object):
     def __init__(self):
         pass

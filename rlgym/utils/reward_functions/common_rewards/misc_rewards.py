@@ -62,7 +62,7 @@ spec_VelocityReward = [
 ]
 
 
-# @jitclass(spec_VelocityReward)
+@jitclass(spec_VelocityReward)
 class VelocityReward(object):
     # Simple reward function to ensure the model is training.
     def __init__(self, negative=False):
@@ -78,7 +78,7 @@ class VelocityReward(object):
         return np.linalg.norm(player.car_data.linear_velocity) / CAR_MAX_SPEED * (1 - 2 * self.negative)
 
 
-# @jitclass
+@jitclass
 class SaveBoostReward(object):
     def __init__(self):
         pass
@@ -111,7 +111,7 @@ spec_AlignBallGoal = [
 ]
 
 
-# @jitclass(spec_AlignBallGoal)
+@jitclass(spec_AlignBallGoal)
 class AlignBallGoal(object):
     def __init__(self, defense=1., offense=1.):
         self.defense = defense
