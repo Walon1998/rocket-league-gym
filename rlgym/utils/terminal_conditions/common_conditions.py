@@ -4,6 +4,8 @@ A module containing implementations of common terminal conditions.
 
 from rlgym.utils.terminal_conditions import TerminalCondition
 from rlgym.utils.gamestates import GameState
+from numba.experimental import jitclass
+from numba import int32, float32, int64, boolean, float64, types, typed, typeof  # import the types
 
 
 class TimeoutCondition(TerminalCondition):
@@ -32,13 +34,34 @@ class TimeoutCondition(TerminalCondition):
         return self.steps >= self.max_steps
 
 
-class NoTouchTimeoutCondition(TimeoutCondition):
+spec_NoTouchTimeoutCondition = [
+    ('steps', int64),
+    ('max_steps', int64),
+
+]
+
+
+@jitclass(spec_NoTouchTimeoutCondition)
+class NoTouchTimeoutCondition:
+    def __init__(self, max_steps: int):
+        self.steps = 0
+        self.max_steps = max_steps
+
+    def reset(self, initial_state: GameState):
+        """
+        Reset the step counter.
+        """
+
+        self.steps = 0
+
     def is_terminal(self, current_state: GameState):
-        if any(p.ball_touched for p in current_state.players):
-            self.steps = 0
-            return False
-        else:
-            return super(NoTouchTimeoutCondition, self).is_terminal(current_state)
+        for p in current_state.players:
+            if p.ball_touched:
+                self.steps = 0
+                return False
+
+        self.steps += 1
+        return self.steps >= self.max_steps
 
 
 class GoalScoredCondition(TerminalCondition):
