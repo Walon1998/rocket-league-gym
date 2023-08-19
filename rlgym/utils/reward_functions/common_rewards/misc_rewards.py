@@ -6,6 +6,9 @@ from rlgym.utils.common_values import BLUE_TEAM, BLUE_GOAL_BACK, ORANGE_GOAL_BAC
 from rlgym.utils.gamestates import GameState, PlayerData
 from rlgym.utils.reward_functions import RewardFunction
 
+from numba.experimental import jitclass
+from numba import int32, float32, boolean, float64, types, typed, typeof  # import the types
+
 
 class EventReward(RewardFunction):
     def __init__(self, goal=0., team_goal=0., concede=-0., touch=0., shot=0., save=0., demo=0., boost_pickup=0.):
@@ -54,11 +57,19 @@ class EventReward(RewardFunction):
         return reward
 
 
-class VelocityReward(RewardFunction):
+spec_VelocityReward = [
+    ('negative', boolean),
+]
+
+
+# @jitclass(spec_VelocityReward)
+class VelocityReward(object):
     # Simple reward function to ensure the model is training.
     def __init__(self, negative=False):
-        super().__init__()
         self.negative = negative
+
+    def pre_step(self, initial_state):
+        pass
 
     def reset(self, initial_state: GameState):
         pass
@@ -67,8 +78,14 @@ class VelocityReward(RewardFunction):
         return np.linalg.norm(player.car_data.linear_velocity) / CAR_MAX_SPEED * (1 - 2 * self.negative)
 
 
-class SaveBoostReward(RewardFunction):
+# @jitclass
+class SaveBoostReward(object):
+    def __init__(self):
+        pass
     def reset(self, initial_state: GameState):
+        pass
+
+    def pre_step(self, initial_state):
         pass
 
     def get_reward(self, player: PlayerData, state: GameState, previous_action: np.ndarray) -> float:
@@ -76,28 +93,40 @@ class SaveBoostReward(RewardFunction):
         return np.sqrt(player.boost_amount)
 
 
-class ConstantReward(RewardFunction):
+# @jitclass
+class ConstantReward(object):
+    def __init__(self):
+        pass
+
     def reset(self, initial_state: GameState):
         pass
 
     def get_reward(self, player: PlayerData, state: GameState, previous_action: np.ndarray) -> float:
-        return 1
+        return 1.0
 
 
-class AlignBallGoal(RewardFunction):
+spec_AlignBallGoal = [
+    ('defense', float32),
+    ('offense', float32),
+]
+
+
+# @jitclass(spec_AlignBallGoal)
+class AlignBallGoal(object):
     def __init__(self, defense=1., offense=1.):
-        super().__init__()
         self.defense = defense
         self.offense = offense
 
+    def pre_step(self, initial_state):
+        pass
     def reset(self, initial_state: GameState):
         pass
 
     def get_reward(self, player: PlayerData, state: GameState, previous_action: np.ndarray) -> float:
         ball = state.ball.position
         pos = player.car_data.position
-        protecc = np.array(BLUE_GOAL_BACK)
-        attacc = np.array(ORANGE_GOAL_BACK)
+        protecc = np.array(BLUE_GOAL_BACK, dtype=np.float32)
+        attacc = np.array(ORANGE_GOAL_BACK, dtype=np.float32)
         if player.team_num == ORANGE_TEAM:
             protecc, attacc = attacc, protecc
 

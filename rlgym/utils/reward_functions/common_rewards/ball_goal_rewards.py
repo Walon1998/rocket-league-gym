@@ -4,12 +4,22 @@ from rlgym.utils import RewardFunction, math
 from rlgym.utils.common_values import BLUE_TEAM, ORANGE_TEAM, ORANGE_GOAL_BACK, \
     BLUE_GOAL_BACK, BALL_MAX_SPEED, BACK_WALL_Y, BALL_RADIUS, BACK_NET_Y
 from rlgym.utils.gamestates import GameState, PlayerData
+from numba import int32, float32, boolean, float64, types, typed, typeof  # import the types
+from numba.experimental import jitclass
+
+spec_LiuDistanceBallToGoalReward = [
+    ('own_goal', boolean),
+
+]
 
 
-class LiuDistanceBallToGoalReward(RewardFunction):
+# @jitclass(spec_LiuDistanceBallToGoalReward)
+class LiuDistanceBallToGoalReward:
     def __init__(self, own_goal=False):
-        super().__init__()
         self.own_goal = own_goal
+
+    def pre_step(self, initial_state):
+        pass
 
     def reset(self, initial_state: GameState):
         pass
@@ -26,9 +36,16 @@ class LiuDistanceBallToGoalReward(RewardFunction):
         return np.exp(-0.5 * dist / BALL_MAX_SPEED)  # Inspired by https://arxiv.org/abs/2105.12196
 
 
-class VelocityBallToGoalReward(RewardFunction):
+spec_VelocityBallToGoalReward = [
+    ('own_goal', boolean),
+    ('use_scalar_projection', boolean),
+
+]
+
+
+# @jitclass(spec_LiuDistanceBallToGoalReward)
+class VelocityBallToGoalReward(object):
     def __init__(self, own_goal=False, use_scalar_projection=False):
-        super().__init__()
         self.own_goal = own_goal
         self.use_scalar_projection = use_scalar_projection
 
