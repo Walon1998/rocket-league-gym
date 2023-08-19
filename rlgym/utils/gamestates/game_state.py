@@ -6,52 +6,27 @@ import numpy as np
 from typing import List, Optional
 from rlgym.utils.gamestates import PlayerData, PhysicsObject
 
-from numba import int32, float32, boolean, float64, types, typed, typeof  # import the types
-from numba.experimental import jitclass
 
-from numba.typed import List as NumbaList
-from numba import typeof, typed, njit
-from numba.types import int32, float32, ListType
-
-spec_GameState = [
-    ('BOOST_PADS_LENGTH', int32),
-    ('BALL_STATE_LENGTH', int32),
-    ('PLAYER_CAR_STATE_LENGTH', int32),
-    ('PLAYER_TERTIARY_INFO_LENGTH', int32),
-    ('PLAYER_INFO_LENGTH', int32),
-    ('game_type', int32),
-    ('blue_score', int32),
-    ('orange_score', int32),
-    ('last_touch', int32),
-    ('players', types.List(PlayerData.class_type.instance_type)),
-    ('ball', PhysicsObject.class_type.instance_type),
-    ('inverted_ball', PhysicsObject.class_type.instance_type),
-    ('boost_pads', float32[:]),
-    ('inverted_boost_pads', float32[:]),
-]
-
-
-@jitclass(spec_GameState)
 class GameState(object):
+    BOOST_PADS_LENGTH = 34
+    BALL_STATE_LENGTH = 18
+    PLAYER_CAR_STATE_LENGTH = 13
+    PLAYER_TERTIARY_INFO_LENGTH = 11
+    PLAYER_INFO_LENGTH = 2 + 2 * PLAYER_CAR_STATE_LENGTH + PLAYER_TERTIARY_INFO_LENGTH
+
     def __init__(self, state_floats: List[float] = None):
-        self.BOOST_PADS_LENGTH = 34
-        self.BALL_STATE_LENGTH = 18
-        self.PLAYER_CAR_STATE_LENGTH = 13
-        self.PLAYER_TERTIARY_INFO_LENGTH = 11
-        self.PLAYER_INFO_LENGTH = 2 + 2 * self.PLAYER_CAR_STATE_LENGTH + self.PLAYER_TERTIARY_INFO_LENGTH
         self.game_type: int = 0
         self.blue_score: int = -1
         self.orange_score: int = -1
         self.last_touch: Optional[int] = -1
 
-        self.players = [PlayerData()]
-        self.players.clear()
+        self.players: List[PlayerData] = []
 
-        self.ball: PhysicsObject = PhysicsObject(None, None, None, None)
-        self.inverted_ball: PhysicsObject = PhysicsObject(None, None, None, None)
+        self.ball: PhysicsObject = PhysicsObject()
+        self.inverted_ball: PhysicsObject = PhysicsObject()
 
         # List of "booleans" (1 or 0)
-        self.boost_pads: np.ndarray = np.zeros(self.BOOST_PADS_LENGTH, dtype=np.float32)
+        self.boost_pads: np.ndarray = np.zeros(GameState.BOOST_PADS_LENGTH, dtype=np.float32)
         self.inverted_boost_pads: np.ndarray = np.zeros_like(self.boost_pads, dtype=np.float32)
 
         if state_floats is not None:
@@ -62,13 +37,13 @@ class GameState(object):
         Decode a string containing the current game state from the Bakkesmod plugin.
         :param state_floats: String containing the game state.
         """
-        # assert type(state_floats) == list, "UNABLE TO DECODE STATE OF TYPE {}".format(type(state_floats))
+        assert type(state_floats) == list, "UNABLE TO DECODE STATE OF TYPE {}".format(type(state_floats))
         self._decode(state_floats)
 
     def _decode(self, state_vals: List[float]):
-        pads_len = self.BOOST_PADS_LENGTH
-        p_len = self.PLAYER_INFO_LENGTH
-        b_len = self.BALL_STATE_LENGTH
+        pads_len = GameState.BOOST_PADS_LENGTH
+        p_len = GameState.PLAYER_INFO_LENGTH
+        b_len = GameState.BALL_STATE_LENGTH
         start = 3
 
         num_ball_packets = 1
@@ -99,13 +74,13 @@ class GameState(object):
 
             if player.ball_touched:
                 self.last_touch = player.car_id
-
-        self.players = sorted(self.players, key=lambda p: p.car_id)  # YOU'RE WELCOME RANGLER, THIS WAS MY INNOVATION.
+                
+        self.players = sorted(self.players, key=lambda p: p.car_id) #YOU'RE WELCOME RANGLER, THIS WAS MY INNOVATION.
 
     def _decode_player(self, full_player_data):
         player_data = PlayerData()
-        c_len = self.PLAYER_CAR_STATE_LENGTH
-        t_len = self.PLAYER_TERTIARY_INFO_LENGTH
+        c_len = GameState.PLAYER_CAR_STATE_LENGTH
+        t_len = GameState.PLAYER_TERTIARY_INFO_LENGTH
 
         start = 2
 
@@ -135,20 +110,21 @@ class GameState(object):
 
         return player_data
 
-    # def __str__(self):
-    #     output = "{}GAME STATE OBJECT{}\n" \
-    #              "Game Type: {}\n" \
-    #              "Orange Score: {}\n" \
-    #              "Blue Score: {}\n" \
-    #              "PLAYERS: {}\n" \
-    #              "BALL: {}\n" \
-    #              "INV_BALL: {}\n" \
-    #              "".format("*" * 8, "*" * 8,
-    #                        self.game_type,
-    #                        self.orange_score,
-    #                        self.blue_score,
-    #                        self.players,
-    #                        self.ball,
-    #                        self.inverted_ball)
+    def __str__(self):
+        output = "{}GAME STATE OBJECT{}\n" \
+                 "Game Type: {}\n" \
+                 "Orange Score: {}\n" \
+                 "Blue Score: {}\n" \
+                 "PLAYERS: {}\n" \
+                 "BALL: {}\n" \
+                 "INV_BALL: {}\n" \
+                 "".format("*" * 8, "*" * 8,
+                           self.game_type,
+                           self.orange_score,
+                           self.blue_score,
+                           self.players,
+                           self.ball,
+                           self.inverted_ball)
 
-    # return output
+        return output
+
