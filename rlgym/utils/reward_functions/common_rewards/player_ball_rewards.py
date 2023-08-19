@@ -4,8 +4,18 @@ from rlgym.utils import RewardFunction, math
 from rlgym.utils.common_values import BALL_RADIUS, CAR_MAX_SPEED
 from rlgym.utils.gamestates import GameState, PlayerData
 
+from numba import int32, float32, boolean, float64, types, typed, typeof  # import the types
+from numba.experimental import jitclass
 
-class LiuDistancePlayerToBallReward(RewardFunction):
+
+# @jitclass
+class LiuDistancePlayerToBallReward:
+    def __init__(self):
+        pass
+
+    def pre_step(self, initial_state):
+        pass
+
     def reset(self, initial_state: GameState):
         pass
 
@@ -15,11 +25,19 @@ class LiuDistancePlayerToBallReward(RewardFunction):
         return np.exp(-0.5 * dist / CAR_MAX_SPEED)  # Inspired by https://arxiv.org/abs/2105.12196
 
 
-class VelocityPlayerToBallReward(RewardFunction):
+spec_VelocityPlayerToBallReward = [
+    ('use_scalar_projection', boolean),
+
+]
+
+
+# @jitclass(spec_VelocityPlayerToBallReward)
+class VelocityPlayerToBallReward(object):
     def __init__(self, use_scalar_projection=False):
-        super().__init__()
         self.use_scalar_projection = use_scalar_projection
 
+    def pre_step(self, initial_state):
+        pass
     def reset(self, initial_state: GameState):
         pass
 
@@ -39,7 +57,14 @@ class VelocityPlayerToBallReward(RewardFunction):
             return float(np.dot(norm_pos_diff, norm_vel))
 
 
-class FaceBallReward(RewardFunction):
+# @jitclass
+class FaceBallReward(object):
+    def __init__(self):
+        pass
+
+    def pre_step(self, initial_state):
+        pass
+
     def reset(self, initial_state: GameState):
         pass
 
