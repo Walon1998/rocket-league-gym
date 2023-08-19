@@ -4,7 +4,28 @@ A class containing all data about a player in the game.
 
 from rlgym.utils.gamestates import PhysicsObject
 
+from numba import int32, float32, boolean, float64  # import the types
+from numba.experimental import jitclass
 
+spec_PlayerData = [
+    ('car_id', int32),
+    ('team_num', int32),
+    ('match_goals', int32),
+    ('match_saves', int32),
+    ('match_shots', int32),
+    ('match_demolishes', int32),
+    ('boost_pickups', int32),
+    ('is_demoed', boolean),
+    ('on_ground', boolean),
+    ('ball_touched', boolean),
+    ('has_jump', boolean),
+    ('has_flip', boolean),
+    ('boost_amount', float32),
+    ('car_data', PhysicsObject.class_type.instance_type),
+    ('inverted_car_data', PhysicsObject.class_type.instance_type),
+]
+
+@jitclass(spec_PlayerData)
 class PlayerData(object):
     def __init__(self):
         self.car_id: int = -1
@@ -20,8 +41,8 @@ class PlayerData(object):
         self.has_jump: bool = False
         self.has_flip: bool = False
         self.boost_amount: float = -1
-        self.car_data: PhysicsObject = PhysicsObject()
-        self.inverted_car_data: PhysicsObject = PhysicsObject()
+        self.car_data: PhysicsObject = PhysicsObject(None, None, None, None)
+        self.inverted_car_data: PhysicsObject = PhysicsObject(None, None, None, None)
 
     def __str__(self):
         output = "****PLAYER DATA OBJECT****\n" \
