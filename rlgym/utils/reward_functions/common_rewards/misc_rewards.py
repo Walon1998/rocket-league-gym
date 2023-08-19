@@ -93,7 +93,7 @@ class SaveBoostReward(object):
         return np.sqrt(player.boost_amount)
 
 
-# @jitclass
+@jitclass
 class ConstantReward(object):
     def __init__(self):
         pass

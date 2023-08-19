@@ -34,13 +34,13 @@ class ConditionalRewardFunction(RewardFunction):
         return 0
 
 
-# spec_constant = [
-#     ('reward_func', bb.ConstantReward.class_type.instance_type),
-#     ('team_only', boolean),
-# ]
+spec_constant = [
+    ('reward_func', bb.ConstantReward.class_type.instance_type),
+    ('team_only', boolean),
+]
 
 
-# @jitclass(spec_constant)
+@jitclass(spec_constant)
 class RewardIfClosestToBall(object):
     def __init__(self, reward_func: RewardFunction, team_only=True):
         self.reward_func = reward_func
@@ -72,7 +72,7 @@ class RewardIfClosestToBall(object):
             return self.reward_func.get_final_reward(player, state, previous_action)
         return 0
 
-# @jitclass(spec_constant)
+@jitclass(spec_constant)
 class RewardIfTouchedLast(object):
     def __init__(self, reward_func):
         self.reward_func = reward_func
@@ -96,7 +96,7 @@ class RewardIfTouchedLast(object):
         return 0
 
 
-# @jitclass(spec_constant)
+@jitclass(spec_constant)
 class RewardIfBehindBall(object):
     def __init__(self, reward_func):
         self.reward_func = reward_func
