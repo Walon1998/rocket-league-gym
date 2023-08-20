@@ -22,7 +22,7 @@ class LiuDistanceBallToGoalReward(RewardFunction):
             objective = np.array(BLUE_GOAL_BACK)
 
         # Compensate for moving objective to back of net
-        dist = np.linalg.norm(state.ball.position - objective) - (BACK_NET_Y - BACK_WALL_Y + BALL_RADIUS)
+        dist = math.vecmag(state.ball.position - objective) - (BACK_NET_Y - BACK_WALL_Y + BALL_RADIUS)
         return np.exp(-0.5 * dist / BALL_MAX_SPEED)  # Inspired by https://arxiv.org/abs/2105.12196
 
 
@@ -52,7 +52,7 @@ class VelocityBallToGoalReward(RewardFunction):
             return inv_t
         else:
             # Regular component velocity
-            norm_pos_diff = pos_diff / np.linalg.norm(pos_diff)
+            norm_pos_diff = pos_diff / math.vecmag(pos_diff)
             norm_vel = vel / BALL_MAX_SPEED
             return float(np.dot(norm_pos_diff, norm_vel))
 

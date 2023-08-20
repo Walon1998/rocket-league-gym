@@ -11,7 +11,7 @@ class LiuDistancePlayerToBallReward(RewardFunction):
 
     def get_reward(self, player: PlayerData, state: GameState, previous_action: np.ndarray) -> float:
         # Compensate for inside of ball being unreachable (keep max reward at 1)
-        dist = np.linalg.norm(player.car_data.position - state.ball.position) - BALL_RADIUS
+        dist = math.vecmag(player.car_data.position - state.ball.position) - BALL_RADIUS
         return np.exp(-0.5 * dist / CAR_MAX_SPEED)  # Inspired by https://arxiv.org/abs/2105.12196
 
 
@@ -34,7 +34,7 @@ class VelocityPlayerToBallReward(RewardFunction):
             return inv_t
         else:
             # Regular component velocity
-            norm_pos_diff = pos_diff / np.linalg.norm(pos_diff)
+            norm_pos_diff = pos_diff / math.vecmag(pos_diff)
             norm_vel = vel / CAR_MAX_SPEED
             return float(np.dot(norm_pos_diff, norm_vel))
 
@@ -45,7 +45,7 @@ class FaceBallReward(RewardFunction):
 
     def get_reward(self, player: PlayerData, state: GameState, previous_action: np.ndarray) -> float:
         pos_diff = state.ball.position - player.car_data.position
-        norm_pos_diff = pos_diff / np.linalg.norm(pos_diff)
+        norm_pos_diff = pos_diff / math.vecmag(pos_diff)
         return float(np.dot(player.car_data.forward(), norm_pos_diff))
 
 

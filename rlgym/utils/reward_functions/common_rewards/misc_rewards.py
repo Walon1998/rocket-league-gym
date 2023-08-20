@@ -64,7 +64,7 @@ class VelocityReward(RewardFunction):
         pass
 
     def get_reward(self, player: PlayerData, state: GameState, previous_action: np.ndarray) -> float:
-        return np.linalg.norm(player.car_data.linear_velocity) / CAR_MAX_SPEED * (1 - 2 * self.negative)
+        return math.vecmag(player.car_data.linear_velocity) / CAR_MAX_SPEED * (1 - 2 * self.negative)
 
 
 class SaveBoostReward(RewardFunction):
