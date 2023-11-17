@@ -41,10 +41,10 @@ class PhysicsObject(object):
         return self.rotation_mtx()[:, 0]
 
     def right(self) -> np.ndarray:
-        return self.rotation_mtx()[:, 1]
+        return self.rotation_mtx()[:, 1] * -1
 
     def left(self) -> np.ndarray:
-        return self.rotation_mtx()[:, 1] * -1
+        return self.rotation_mtx()[:, 1]
 
     def up(self) -> np.ndarray:
         return self.rotation_mtx()[:, 2]
