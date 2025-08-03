@@ -50,6 +50,10 @@ def vecmean(vec):
     return np.mean(vec)
 
 @jit(nopython=True, nogil=True, cache=True, parallel=False, fastmath=True)
+def vecdot(a, b):
+    return np.dot(a, b)
+
+@jit(nopython=True, nogil=True, cache=True, parallel=False, fastmath=True)
 def unitvec(vec):
     return np.divide(vec, vecmag(vec))
 
